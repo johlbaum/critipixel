@@ -10131,6 +10131,8 @@
     "platform": {
         "php": ">=8.2",
         "ext-ctype": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
         "ext-iconv": "*",
         "ext-pgsql": "*"
     },

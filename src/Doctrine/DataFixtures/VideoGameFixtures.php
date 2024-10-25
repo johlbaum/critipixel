@@ -2,8 +2,6 @@
 
 namespace App\Doctrine\DataFixtures;
 
-use App\Model\Entity\Review;
-use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Model\Entity\VideoGame;
 use App\Rating\CalculateAverageRating;
@@ -27,8 +25,6 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
 
     public function load(ObjectManager $manager): void
     {
-        $tags = $manager->getRepository(Tag::class)->findAll();
-
         $users = $manager->getRepository(User::class)->findAll();
 
         $videoGames = array_fill_callback(0, 50, fn (int $index): VideoGame => (new VideoGame)
@@ -41,39 +37,18 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
             ->setImageSize(2_098_872)
         );
 
-        array_walk($videoGames, static function (VideoGame $videoGame, int $index) use ($tags) {
-            $videoGame->getTags()->add($tags[$index % 5]);
-        });
+        // TODO : Ajouter les tags aux vidéos
 
         array_walk($videoGames, [$manager, 'persist']);
 
         $manager->flush();
 
-        array_walk($videoGames, function (VideoGame $videoGame, int $index) use ($users, $manager) {
-            shuffle($users);
+        // TODO : Ajouter des reviews aux vidéos
 
-            foreach (array_slice($users, 0, 5) as $user) {
-                $review = (new Review())
-                    ->setUser($user)
-                    ->setVideoGame($videoGame)
-                    ->setRating($this->faker->numberBetween(1, 5))
-                    ->setComment($this->faker->paragraphs(1, true))
-                ;
-
-                $videoGame->getReviews()->add($review);
-
-                $manager->persist($review);
-
-                $this->calculateAverageRating->calculateAverage($videoGame);
-                $this->countRatingsPerValue->countRatingsPerValue($videoGame);
-            }
-        });
-
-        $manager->flush();
     }
 
     public function getDependencies(): array
     {
-        return [TagFixtures::class, UserFixtures::class];
+        return [UserFixtures::class];
     }
 }
