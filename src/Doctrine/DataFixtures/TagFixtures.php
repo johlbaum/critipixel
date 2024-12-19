@@ -29,7 +29,7 @@ final class TagFixtures extends Fixture
         $tags = array_fill_callback(
             0,
             10,
-            // La méthode array_fill_callback§() attend un callable. 
+            // La méthode array_fill_callback() attend un callable. 
             // On doit passer une référence à la méthode create, pas son résultat immédiat.
             [self::class, 'create']
         );
