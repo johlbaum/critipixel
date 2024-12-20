@@ -16,14 +16,18 @@ final readonly class RatingHandler implements CalculateAverageRating, CountRatin
             return;
         }
 
+        // Calcul de la somme des notes associées au jeu vidéo.
         $ratingsSum = array_sum(
+            // Utilisation de array_map() pour transformer la collection d'avis en un tableau de notes.
             array_map(
-                static fn (Review $review): int => $review->getRating(),
+                // Callback : on extrait la note de chaque objet Review.
+                static fn(Review $review): int => $review->getRating(),
+                // Conversion de la collection d'objets Review en un tableau simple d'objets Review.
                 $videoGame->getReviews()->toArray()
             )
         );
 
-        $videoGame->setAverageRating((int) ceil($ratingsSum/ count($videoGame->getReviews())));
+        $videoGame->setAverageRating((int) ceil($ratingsSum / count($videoGame->getReviews())));
     }
 
     public function countRatingsPerValue(VideoGame $videoGame): void

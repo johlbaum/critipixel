@@ -23,7 +23,7 @@ use Traversable;
 final class VideoGamesList implements Countable, IteratorAggregate
 {
     private FormView $form;
-    
+
     private Filter $filter;
 
     /**
@@ -40,21 +40,23 @@ final class VideoGamesList implements Countable, IteratorAggregate
         private FormFactoryInterface $formFactory,
         private VideoGameRepository $videoGameRepository,
         private Pagination  $pagination,
-    ) {
-    }
+    ) {}
 
     public function getForm(): FormView
     {
         return $this->form;
     }
 
-      public function handleRequest(Request $request): self
+    public function handleRequest(Request $request): self
     {
+        // On génère un objet filtre vide pour les tags et pour la recherche pas tags.
         $this->filter = new Filter();
 
+        // On récupère les données du TRI envoyées dans l'URL (formulaire de TRI).
         $this->route = $request->attributes->get('_route');
         $this->routeParameters = $request->query->all();
 
+        // On récupère les données du filtre (Tag + résulat de la recherche).
         $this->form = $this->formFactory
             ->create(
                 FilterType::class,
