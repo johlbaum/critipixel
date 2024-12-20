@@ -8,6 +8,7 @@ use App\Model\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DomCrawler\Crawler;
 
 abstract class FunctionalTestCase extends WebTestCase
@@ -45,5 +46,18 @@ abstract class FunctionalTestCase extends WebTestCase
         $user = $this->service(EntityManagerInterface::class)->getRepository(User::class)->findOneByEmail($email);
 
         $this->client->loginUser($user);
+    }
+
+    protected function getUser(): ?User
+    {
+        return $this->client->getContainer()->get(Security::class)->getUser();
+    }
+
+    /**
+     * @param array<string, mixed> $formData
+     */
+    protected function submit(string $button, array $formData = [], string $method = 'POST'): Crawler
+    {
+        return $this->client->submitForm($button, $formData, $method);
     }
 }
