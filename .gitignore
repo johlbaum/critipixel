@@ -21,4 +21,4 @@ php.local.ini
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
-
+.env.test
