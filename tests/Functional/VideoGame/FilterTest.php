@@ -27,17 +27,6 @@ final class FilterTest extends FunctionalTestCase
         self::assertSelectorCount(1, 'article.game-card');
     }
 
-    public function tagProvider(): array
-    {
-        return [
-            'Aucun tag' => [[], 10, 'Jeu vidéo 0', 'Jeu vidéo 9'],
-            'Un seul tag' => [['4'], 10, 'Jeu vidéo 0', 'Jeu vidéo 19'],
-            'Plusieurs tags' => [['1', '2', '3', '4', '5'], 5, 'Jeu vidéo 0', 'Jeu vidéo 40'],
-            'Plusieurs tags qui ne correspondent à aucun jeu' => [['1', '2', '3', '4', '5', '6'], 0, null, null],
-            'Un tag qui n\'existe pas' => [['100'], 10, 'Jeu vidéo 0', 'Jeu vidéo 9']
-        ];
-    }
-
     /**
      * @dataProvider tagProvider
      */
@@ -92,5 +81,25 @@ final class FilterTest extends FunctionalTestCase
         if ($expectedCount === 0) {
             self::assertSelectorNotExists('article.game-card');
         }
+    }
+
+    public function tagProvider(): array
+    {
+        return [
+            // Test sans aucun tag.
+            'no tags' => [[], 10, 'Jeu vidéo 0', 'Jeu vidéo 9'],
+
+            // Test avec un seul tag.
+            'single tag' => [['4'], 10, 'Jeu vidéo 0', 'Jeu vidéo 19'],
+
+            // Test avec plusieurs tags.
+            'multiple tags' => [['1', '2', '3', '4', '5'], 5, 'Jeu vidéo 0', 'Jeu vidéo 40'],
+
+            // Test avec plusieurs tags qui ne correspondent à aucun jeu.
+            'tags with no matching games' => [['1', '2', '3', '4', '5', '6'], 0, null, null],
+
+            // Test avec un tag inexistant.
+            'non-existent tag' => [['100'], 10, 'Jeu vidéo 0', 'Jeu vidéo 9']
+        ];
     }
 }
