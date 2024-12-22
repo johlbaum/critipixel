@@ -22,3 +22,6 @@ php.local.ini
 ###< symfony/asset-mapper ###
 
 .env.test
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
