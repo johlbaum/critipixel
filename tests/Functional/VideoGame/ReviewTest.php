@@ -11,24 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ReviewTest extends FunctionalTestCase
 {
-    private $urlGenerator;
-
     public function testShouldPostReview()
     {
         // On connecte l'utilisateur.
         $this->login();
 
-        // On initialise le générateur d'URL.
-        $this->urlGenerator = $this->client->getContainer()->get('router.default');
-
-        // On récupère un jeu dans la base de données (le premier jeu).
-        $videoGame = $this->getEntityManager()->getRepository(VideoGame::class)->findOneBy([]);
-
-        // On génére l'URL de la page de détail du jeu vidéo via le nom de la route et le slug.
-        $url = $this->urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]);
-
-        // On envoie une requête GET vers l'URL générée.
-        $crawler = $this->get($url);
+        // On envoie une requête.
+        $crawler = $this->get('/jeu-video-0');
 
         // On vérifie que la réponse de la requête HTTP a un statut HTTP compris entre 200 et 299.
         self::assertResponseIsSuccessful();
@@ -48,20 +37,24 @@ final class ReviewTest extends FunctionalTestCase
         $this->client->followRedirect();
 
         // On vérifie que le formulaire n'est plus affiché.
-        $crawler = $this->get($url);
+        $crawler = $this->get('/jeu-video-0');
         self::assertSelectorNotExists('form[name="review"]');
 
-        // On vérifie que les données saisies sont présentes sur la page après la redirection
+        // On vérifie que les données saisies sont présentes sur la page après la redirection.
         self::assertSelectorTextContains('div.list-group-item:last-child h3', 'user+0');
         self::assertSelectorTextContains('div.list-group-item:last-child p', 'C\'est un très bon jeu !');
         self::assertSelectorTextContains('div.list-group-item:last-child span.value', '3');
 
-        // On récupère la review créé par le test en base de données et on effectue les vérifications.
+        // On récupère l'utilisateur connecté.
         $user = $this->getUser();
+
+        // On récupère la review créée par le test en base de données.
+        $videoGame = $this->getEntityManager()->getRepository(VideoGame::class)->find(1); // Le jeu vidéo '/jeu-video-0' a l'ID 1.
         $review = $this->getEntityManager()->getRepository(Review::class)->findOneBy([
             'videoGame' => $videoGame,
             'user' => $user
         ]);
+
         self::assertNotNull($review); // On vérifie que l'avis existe.
         self::assertEquals(3, $review->getRating()); // On vérifie que la note soit égale à 3.
         self::assertEquals("C'est un très bon jeu !", $review->getComment()); // On vérifie que le commentaire corresponde.
@@ -72,17 +65,8 @@ final class ReviewTest extends FunctionalTestCase
         // On connecte l'utilisateur.
         $this->login();
 
-        // On initialise le générateur d'URL.
-        $this->urlGenerator = $this->client->getContainer()->get('router.default');
-
-        // On récupère un jeu dans la base de données (le premier jeu).
-        $videoGame = $this->getEntityManager()->getRepository(VideoGame::class)->findOneBy([]);
-
-        // On génère l'URL de la page de détail du jeu vidéo.
-        $url = $this->urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]);
-
-        // On envoie une requête GET vers l'URL générée.
-        $crawler = $this->get($url);
+        // On envoie une requête.
+        $crawler = $this->get('/jeu-video-0');
 
         // On vérifie que la réponse de la requête HTTP a un statut HTTP compris entre 200 et 299.
         self::assertResponseIsSuccessful();
@@ -101,17 +85,8 @@ final class ReviewTest extends FunctionalTestCase
 
     public function testShouldNotDisplayFormForUnauthenticatedUser()
     {
-        // On initialise le générateur d'URL.
-        $this->urlGenerator = $this->client->getContainer()->get('router.default');
-
-        // On récupère un jeu dans la base de données (le premier jeu).
-        $videoGame = $this->getEntityManager()->getRepository(VideoGame::class)->findOneBy([]);
-
-        // On génère l'URL de la page de détail du jeu vidéo.
-        $url = $this->urlGenerator->generate('video_games_show', ['slug' => $videoGame->getSlug()]);
-
         // On envoie une requête GET sans être connecté.
-        $this->get($url);
+        $this->get('/jeu-video-0');
 
         // On vérifie que la réponse de la requête HTTP a un statut HTTP compris entre 200 et 299.
         self::assertResponseIsSuccessful();
