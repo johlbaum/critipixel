@@ -10,8 +10,11 @@ final class CountRatingsPerValuesTest extends TestCase
 {
     /**
      * @dataProvider provideRatingsAndExpectedCountRating
+     *
+     * @param int[] $ratings
+     * @param NumberOfRatingPerValue $expectedNumberOfRatingPerValue
      */
-    public function testCountRatingPerValues(array $ratings, NumberOfRatingPerValue $expectedNumberOfRatingPerValue)
+    public function testCountRatingPerValues(array $ratings, NumberOfRatingPerValue $expectedNumberOfRatingPerValue): void
     {
         // On crée un jeu et on lui ajoute des notes.
         $videoGame = $this->createVideoGameWithRatings($ratings);
@@ -26,6 +29,9 @@ final class CountRatingsPerValuesTest extends TestCase
         $this->assertEquals($expectedNumberOfRatingPerValue, $videoGame->getNumberOfRatingsPerValue());
     }
 
+    /**
+     * @param int[] $ratings
+     */
     private function createVideoGameWithRatings(array $ratings): VideoGame
     {
         $videoGame = new VideoGame();
@@ -38,6 +44,9 @@ final class CountRatingsPerValuesTest extends TestCase
         return $videoGame;
     }
 
+    /**
+     * @return array<string, array{int[], NumberOfRatingPerValue}>
+     */
     public function provideRatingsAndExpectedCountRating(): array
     {
         return [
@@ -67,6 +76,9 @@ final class CountRatingsPerValuesTest extends TestCase
         ];
     }
 
+    /**
+     * @param int[] $ratingsCount
+     */
     private function createExpectedNumberOfRatingPerValue(array $ratingsCount): NumberOfRatingPerValue
     {
         $numberOfRatings = new NumberOfRatingPerValue();

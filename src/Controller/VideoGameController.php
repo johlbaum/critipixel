@@ -42,7 +42,10 @@ final class VideoGameController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted('review', $videoGame);
             $review->setVideoGame($videoGame);
-            $review->setUser($this->getUser());
+            $user = $this->getUser();
+            if ($user instanceof \App\Model\Entity\User) {
+                $review->setUser($user);
+            }
             $entityManager->persist($review);
             $entityManager->flush();
             return $this->redirectToRoute('video_games_show', ['slug' => $videoGame->getSlug()]);

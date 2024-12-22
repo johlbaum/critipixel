@@ -5,20 +5,42 @@ namespace App\Doctrine\DataFixtures;
 use App\Model\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use function array_fill_callback;
 
 final class UserFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $users = array_fill_callback(0, 10, fn (int $index): User => (new User)
-            ->setEmail(sprintf('user+%d@email.com', $index))
-            ->setPlainPassword('password')
-            ->setUsername(sprintf('user+%d', $index))
+        /** @var User[] $users */
+        $users = array_map(
+            /**
+             * Callback pour array_map.
+             *
+             * @param int $index
+             * @return User
+             */
+            fn(int $index): User => (new User)
+                ->setEmail(sprintf('user+%d@email.com', $index))
+                ->setPlainPassword('password')
+                ->setUsername(sprintf('user+%d', $index)),
+            range(0, 24) // On génère un tableau d'index de 0 à 24 pour la création des utilisateurs.
         );
 
-        array_walk($users, [$manager, 'persist']);
+        // array_walk() : exécute une callback sur chaque élément d'un tableau.
+        array_walk(
+            $users,
+            /**
+             * Callback pour array_walk.
+             *
+             * @param User $user
+             * @param int $key
+             * @return void
+             */
+            function (User $user) use ($manager): void {
+                $manager->persist($user);
+            }
+        );
 
+        // On sauvegarde les utilisateurs dans la base de données.
         $manager->flush();
     }
 }

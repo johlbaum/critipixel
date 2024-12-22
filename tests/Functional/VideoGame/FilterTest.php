@@ -29,6 +29,11 @@ final class FilterTest extends FunctionalTestCase
 
     /**
      * @dataProvider tagProvider
+     * 
+     * @param array<int|string> $tags  
+     * @param int $expectedCount
+     * @param string|null $expectedFirstGameTitle
+     * @param string|null $expectedLastGameTitle
      */
     public function testShouldFilterByTagsVideoGames(array $tags, int $expectedCount, $expectedFirstGameTitle, $expectedLastGameTitle): void
     {
@@ -51,7 +56,7 @@ final class FilterTest extends FunctionalTestCase
             // On vérifie si le tag existe.
             if (isset($form[$fieldKey])) {
                 // On assigne la valeur du tag au champ du formulaire.
-                $form[$fieldKey] = (int)$tag;
+                $form[$fieldKey] = (string)$tag;
             }
         }
 
@@ -83,6 +88,9 @@ final class FilterTest extends FunctionalTestCase
         }
     }
 
+    /**
+     * @return array<string, array{0: array<int|string>, 1: int, 2: string|null, 3: string|null}>  
+     */
     public function tagProvider(): array
     {
         return [

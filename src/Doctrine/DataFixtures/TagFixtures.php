@@ -5,7 +5,6 @@ namespace App\Doctrine\DataFixtures;
 use App\Model\Entity\Tag;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use function array_fill_callback;
 
 final class TagFixtures extends Fixture
 {
@@ -22,20 +21,31 @@ final class TagFixtures extends Fixture
         return $tag;
     }
 
-
     public function load(ObjectManager $manager): void
     {
-        // Va retourner un tableau d'objets Tag.
-        $tags = array_fill_callback(
-            0,
-            10,
-            // La méthode array_fill_callback() attend un callable. 
-            // On doit passer une référence à la méthode create, pas son résultat immédiat.
-            [self::class, 'create']
+        /** @var Tag[] $tags */
+        $tags = array_map(
+            /**
+             * Callback pour array_map.
+             *
+             * @param int $index
+             * @return Tag
+             */
+            fn(int $index): Tag => self::create($index),
+            range(0, 9) // On génère un tableau d'index de 0 à 9 pour créer 10 tags.
         );
 
-        // array_walk() : exécute une callback sur chacun des éléments d'un tableau.
-        array_walk($tags, [$manager, 'persist']);
+        array_walk(
+            $tags,
+            /**
+             * Callback pour array_walk.
+             *
+             * @param Tag $tag
+             */
+            function (Tag $tag) use ($manager): void {
+                $manager->persist($tag);
+            }
+        );
 
         $manager->flush();
     }

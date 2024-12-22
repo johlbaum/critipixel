@@ -27,7 +27,6 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
     public function load(ObjectManager $manager): void
     {
         $tags = $manager->getRepository(Tag::class)->findAll();
-
         $users = $manager->getRepository(User::class)->findAll();
 
         // On exclut l'utilisateur ayant l'email 'user+0@email.com'. Pour les tests, cet utilisateur ne doit pas avoir de review associée.
@@ -36,56 +35,56 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         $videoGames = array_fill_callback(
             0,
             50,
-            // fn est une manière de déclarer des fonctions anonymes dans PHP.
-            // Elle prend un argument $index et retourne un objet VideoGame.
-            fn(int $index): VideoGame => (new VideoGame)
-                ->setTitle(sprintf('Jeu vidéo %d', $index))
-                ->setDescription($this->faker->paragraphs(10, true)) // Si le deuxième paramètre est 'true', Faker retourne les paragraphes générés sous forme de chaîne de caractères, où les paragraphes sont concaténés et séparés par un retour à la ligne (\n).
-                ->setReleaseDate(new DateTimeImmutable())
-                ->setTest($this->faker->paragraphs(6, true))
-                ->setRating(($index % 5) + 1)
-                ->setImageName(sprintf('video_game_%d.png', $index))
-                ->setImageSize(2_098_872)
+            fn(int $index): array => [
+                (new VideoGame)
+                    ->setTitle(sprintf('Jeu vidéo %d', $index))
+                    ->setDescription($this->faker->paragraphs(10, true))
+                    ->setReleaseDate(new DateTimeImmutable())
+                    ->setTest($this->faker->paragraphs(6, true))
+                    ->setRating(($index % 5) + 1)
+                    ->setImageName(sprintf('video_game_%d.png', $index))
+                    ->setImageSize(2_098_872)
+            ]
         );
 
-        // On ajoute des tags aux jeux.
-        array_walk($videoGames, static function (VideoGame $videoGame, int $index) use ($tags) {
-            // On ajoute 5 tags à chaque jeu.
-            for ($tagIndex = 0; $tagIndex < 5; $tagIndex++) {
-                // On détermine quel tag ajouter en fonction de l'index du jeu et de celui du tag.
-                $tag = $tags[($index + $tagIndex) % count($tags)];
-
-                // On récupère la collection de Tags du jeu.
-                // Au premier tour, la collection est vide, mais cela permet d'utiliser les méthodes disponibles pour les collections (add(), get(), contains() etc.).
-                // On vérifie si le tag existe déjà dans la collection du jeu.
-                if (!$videoGame->getTags()->contains($tag)) {
-                    // Si ce n'est pas le cas, on l'ajoute à la collection.
-                    $videoGame->getTags()->add($tag);
+        array_walk($videoGames, static function (array $videoGameArray, int $index) use ($tags) {
+            foreach ($videoGameArray as $videoGame) {
+                for ($tagIndex = 0; $tagIndex < 5; $tagIndex++) {
+                    $tag = $tags[($index + $tagIndex) % count($tags)];
+                    if (!$videoGame->getTags()->contains($tag)) {
+                        $videoGame->getTags()->add($tag);
+                    }
                 }
             }
         });
 
-        array_walk($videoGames, [$manager, 'persist']);
+        array_walk($videoGames, static function (array $videoGameArray) use ($manager) {
+            foreach ($videoGameArray as $videoGame) {
+                $manager->persist($videoGame);
+            }
+        });
 
         $manager->flush();
 
-        // On ajoute des reviews aux jeux.
-        array_walk($videoGames, function (VideoGame $videoGame) use ($filteredUsers, $manager) {
-            foreach ($filteredUsers as $user) {
-                $comment = $this->faker->paragraphs(1, true);
+        // On ajoute des reviews.
+        array_walk($videoGames, function (array $videoGameArray) use ($filteredUsers, $manager) {
+            foreach ($videoGameArray as $videoGame) {
+                foreach ($filteredUsers as $user) {
+                    $comment = $this->faker->paragraphs(1, true);
 
-                $review = (new Review())
-                    ->setUser($user)
-                    ->setVideoGame($videoGame)
-                    ->setRating($this->faker->numberBetween(1, 5))
-                    ->setComment($comment);
+                    $review = (new Review())
+                        ->setUser($user)
+                        ->setVideoGame($videoGame)
+                        ->setRating($this->faker->numberBetween(1, 5))
+                        ->setComment($comment);
 
-                $videoGame->getReviews()->add($review);
+                    $videoGame->getReviews()->add($review);
 
-                $manager->persist($review);
+                    $manager->persist($review);
 
-                $this->calculateAverageRating->calculateAverage($videoGame);
-                $this->countRatingsPerValue->countRatingsPerValue($videoGame);
+                    $this->calculateAverageRating->calculateAverage($videoGame);
+                    $this->countRatingsPerValue->countRatingsPerValue($videoGame);
+                }
             }
         });
 

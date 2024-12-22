@@ -9,8 +9,11 @@ final class CalculateAverageRatingTest extends TestCase
 {
     /**
      * @dataProvider provideRatingsAndExpectedAverage
+     *
+     * @param int[] $ratings
+     * @param int|null $expectedAverage
      */
-    public function testCalculateAverage(array $ratings, ?int $expectedAverage)
+    public function testCalculateAverage(array $ratings, ?int $expectedAverage): void
     {
         // On crée un jeu et on lui ajoute des notes.
         $videoGame = $this->createVideoGameWithRatings($ratings);
@@ -25,6 +28,9 @@ final class CalculateAverageRatingTest extends TestCase
         $this->assertSame($expectedAverage, $videoGame->getAverageRating());
     }
 
+    /**
+     * @param int[] $ratings
+     */
     private function createVideoGameWithRatings(array $ratings): VideoGame
     {
         $videoGame = new VideoGame();
@@ -37,6 +43,9 @@ final class CalculateAverageRatingTest extends TestCase
         return $videoGame;
     }
 
+    /**
+     * @return array<string, array{int[], int|null}>
+     */
     public function provideRatingsAndExpectedAverage(): array
     {
         return [

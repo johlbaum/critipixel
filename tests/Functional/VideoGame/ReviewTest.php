@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ReviewTest extends FunctionalTestCase
 {
-    public function testShouldPostReview()
+    public function testShouldPostReview(): void
     {
         // On connecte l'utilisateur.
         $this->login();
@@ -24,7 +24,7 @@ final class ReviewTest extends FunctionalTestCase
 
         // On capture le bouton de soumission du formulaire et on remplit les champs.
         $form = $crawler->selectButton('Poster')->form();
-        $form['review[rating]'] = 3;
+        $form['review[rating]'] = '3';
         $form['review[comment]'] = "C'est un très bon jeu !";
 
         // On soumet le formulaire.
@@ -60,7 +60,7 @@ final class ReviewTest extends FunctionalTestCase
         self::assertEquals("C'est un très bon jeu !", $review->getComment()); // On vérifie que le commentaire corresponde.
     }
 
-    public function testShouldNotAllowInvalidReview()
+    public function testShouldNotAllowInvalidReview(): void
     {
         // On connecte l'utilisateur.
         $this->login();
@@ -75,7 +75,7 @@ final class ReviewTest extends FunctionalTestCase
         $form = $crawler->selectButton('Poster')->form();
 
         // Scénario où l'utilisateur essaie d'ajouter une note avec un commentaire trop long. 
-        $form['review[rating]'] = 3;
+        $form['review[rating]'] = '3';
         $form['review[comment]'] = str_repeat('a', 501); // Une contrainte de validation à 500 caractères est insérée sur la propriété $comment de l'entité Review.
         $this->client->submit($form);
 
@@ -83,7 +83,7 @@ final class ReviewTest extends FunctionalTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testShouldNotDisplayFormForUnauthenticatedUser()
+    public function testShouldNotDisplayFormForUnauthenticatedUser(): void
     {
         // On envoie une requête GET sans être connecté.
         $this->get('/jeu-video-0');
