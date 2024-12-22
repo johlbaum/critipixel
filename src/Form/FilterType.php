@@ -14,6 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @template TData of Filter
+ *
  * @extends AbstractType<Filter>
  */
 final class FilterType extends AbstractType
@@ -24,7 +25,7 @@ final class FilterType extends AbstractType
             ->add('search', TextType::class, [
                 'label' => 'Rechercher',
                 'required' => false,
-                'attr' =>  [
+                'attr' => [
                     'placeholder' => 'Rechercher...',
                 ],
             ])
@@ -35,7 +36,7 @@ final class FilterType extends AbstractType
                 'expanded' => true,
                 'class' => Tag::class,
                 'choice_label' => 'name',
-                'attr' =>  [
+                'attr' => [
                     'class' => 'd-flex gap-2 flex-wrap',
                 ],
             ]);

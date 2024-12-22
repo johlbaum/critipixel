@@ -1,9 +1,9 @@
 <?php
 
 use App\Model\Entity\NumberOfRatingPerValue;
+use App\Model\Entity\Review;
 use App\Model\Entity\VideoGame;
 use App\Rating\RatingHandler;
-use App\Model\Entity\Review;
 use PHPUnit\Framework\TestCase;
 
 final class CountRatingsPerValuesTest extends TestCase
@@ -12,7 +12,6 @@ final class CountRatingsPerValuesTest extends TestCase
      * @dataProvider provideRatingsAndExpectedCountRating
      *
      * @param int[] $ratings
-     * @param NumberOfRatingPerValue $expectedNumberOfRatingPerValue
      */
     public function testCountRatingPerValues(array $ratings, NumberOfRatingPerValue $expectedNumberOfRatingPerValue): void
     {
@@ -70,9 +69,9 @@ final class CountRatingsPerValuesTest extends TestCase
                     2 => 2,
                     3 => 3,
                     4 => 4,
-                    5 => 5
-                ])
-            ]
+                    5 => 5,
+                ]),
+            ],
         ];
     }
 

@@ -28,7 +28,9 @@ abstract class FunctionalTestCase extends WebTestCase
 
     /**
      * @template T of object
+     *
      * @param class-string<T> $id
+     *
      * @return T
      */
     protected function service(string $id): object
@@ -54,6 +56,7 @@ abstract class FunctionalTestCase extends WebTestCase
     protected function getUser(): ?User
     {
         $user = $this->client->getContainer()->get(Security::class)->getUser();
+
         return $user instanceof User ? $user : null;
     }
 

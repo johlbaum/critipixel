@@ -29,11 +29,10 @@ final class FilterTest extends FunctionalTestCase
 
     /**
      * @dataProvider tagProvider
-     * 
-     * @param array<int|string> $tags  
-     * @param int $expectedCount
-     * @param string|null $expectedFirstGameTitle
-     * @param string|null $expectedLastGameTitle
+     *
+     * @param array<int|string> $tags
+     * @param string|null       $expectedFirstGameTitle
+     * @param string|null       $expectedLastGameTitle
      */
     public function testShouldFilterByTagsVideoGames(array $tags, int $expectedCount, $expectedFirstGameTitle, $expectedLastGameTitle): void
     {
@@ -51,12 +50,12 @@ final class FilterTest extends FunctionalTestCase
 
         foreach ($tags as $tag) {
             // On construit la clé pour chaque champ du formulaire
-            $fieldKey = 'filter[tags][' . ((int)$tag - 1) . ']';
+            $fieldKey = 'filter[tags]['.((int) $tag - 1).']';
 
             // On vérifie si le tag existe.
             if (isset($form[$fieldKey])) {
                 // On assigne la valeur du tag au champ du formulaire.
-                $form[$fieldKey] = (string)$tag;
+                $form[$fieldKey] = (string) $tag;
             }
         }
 
@@ -78,18 +77,18 @@ final class FilterTest extends FunctionalTestCase
 
             // On vérifie que le titre du dernier jeu vidéo filtré est bien le bon.
             self::assertSelectorTextSame(
-                'article.game-card:nth-child(' . $expectedCount . ') h5.game-card-title a',
+                'article.game-card:nth-child('.$expectedCount.') h5.game-card-title a',
                 $expectedLastGameTitle
             );
         }
 
-        if ($expectedCount === 0) {
+        if (0 === $expectedCount) {
             self::assertSelectorNotExists('article.game-card');
         }
     }
 
     /**
-     * @return array<string, array{0: array<int|string>, 1: int, 2: string|null, 3: string|null}>  
+     * @return array<string, array{0: array<int|string>, 1: int, 2: string|null, 3: string|null}>
      */
     public function tagProvider(): array
     {
@@ -107,7 +106,7 @@ final class FilterTest extends FunctionalTestCase
             'tags with no matching games' => [['1', '2', '3', '4', '5', '6'], 0, null, null],
 
             // Test avec un tag inexistant.
-            'non-existent tag' => [['100'], 10, 'Jeu vidéo 0', 'Jeu vidéo 9']
+            'non-existent tag' => [['100'], 10, 'Jeu vidéo 0', 'Jeu vidéo 9'],
         ];
     }
 }

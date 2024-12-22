@@ -52,7 +52,7 @@ final class ReviewTest extends FunctionalTestCase
         $videoGame = $this->getEntityManager()->getRepository(VideoGame::class)->find(1); // Le jeu vidéo '/jeu-video-0' a l'ID 1.
         $review = $this->getEntityManager()->getRepository(Review::class)->findOneBy([
             'videoGame' => $videoGame,
-            'user' => $user
+            'user' => $user,
         ]);
 
         self::assertNotNull($review); // On vérifie que l'avis existe.
@@ -74,7 +74,7 @@ final class ReviewTest extends FunctionalTestCase
         // On capture le bouton de soumission du formulaire.
         $form = $crawler->selectButton('Poster')->form();
 
-        // Scénario où l'utilisateur essaie d'ajouter une note avec un commentaire trop long. 
+        // Scénario où l'utilisateur essaie d'ajouter une note avec un commentaire trop long.
         $form['review[rating]'] = '3';
         $form['review[comment]'] = str_repeat('a', 501); // Une contrainte de validation à 500 caractères est insérée sur la propriété $comment de l'entité Review.
         $this->client->submit($form);

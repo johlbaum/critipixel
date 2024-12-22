@@ -11,8 +11,9 @@ final readonly class RatingHandler implements CalculateAverageRating, CountRatin
 {
     public function calculateAverage(VideoGame $videoGame): void
     {
-        if (count($videoGame->getReviews()) === 0) {
+        if (0 === count($videoGame->getReviews())) {
             $videoGame->setAverageRating(null);
+
             return;
         }
 
@@ -21,7 +22,7 @@ final readonly class RatingHandler implements CalculateAverageRating, CountRatin
             // Utilisation de array_map() pour transformer la collection d'avis en un tableau de notes.
             array_map(
                 // Callback : on extrait la note de chaque objet Review.
-                static fn(Review $review): int => $review->getRating(),
+                static fn (Review $review): int => $review->getRating(),
                 // Conversion de la collection d'objets Review en un tableau simple d'objets Review.
                 $videoGame->getReviews()->toArray()
             )
@@ -34,7 +35,7 @@ final readonly class RatingHandler implements CalculateAverageRating, CountRatin
     {
         $videoGame->getNumberOfRatingsPerValue()->clear();
 
-        if (count($videoGame->getReviews()) === 0) {
+        if (0 === count($videoGame->getReviews())) {
             return;
         }
 

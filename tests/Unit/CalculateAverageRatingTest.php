@@ -1,8 +1,8 @@
 <?php
 
+use App\Model\Entity\Review;
 use App\Model\Entity\VideoGame;
 use App\Rating\RatingHandler;
-use App\Model\Entity\Review;
 use PHPUnit\Framework\TestCase;
 
 final class CalculateAverageRatingTest extends TestCase
@@ -11,7 +11,6 @@ final class CalculateAverageRatingTest extends TestCase
      * @dataProvider provideRatingsAndExpectedAverage
      *
      * @param int[] $ratings
-     * @param int|null $expectedAverage
      */
     public function testCalculateAverage(array $ratings, ?int $expectedAverage): void
     {

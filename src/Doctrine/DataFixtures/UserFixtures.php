@@ -14,11 +14,8 @@ final class UserFixtures extends Fixture
         $users = array_map(
             /**
              * Callback pour array_map.
-             *
-             * @param int $index
-             * @return User
              */
-            fn(int $index): User => (new User)
+            fn (int $index): User => (new User())
                 ->setEmail(sprintf('user+%d@email.com', $index))
                 ->setPlainPassword('password')
                 ->setUsername(sprintf('user+%d', $index)),
@@ -31,8 +28,6 @@ final class UserFixtures extends Fixture
             /**
              * Callback pour array_walk.
              *
-             * @param User $user
-             * @param int $key
              * @return void
              */
             function (User $user) use ($manager): void {

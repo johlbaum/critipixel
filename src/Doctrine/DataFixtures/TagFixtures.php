@@ -27,11 +27,8 @@ final class TagFixtures extends Fixture
         $tags = array_map(
             /**
              * Callback pour array_map.
-             *
-             * @param int $index
-             * @return Tag
              */
-            fn(int $index): Tag => self::create($index),
+            fn (int $index): Tag => self::create($index),
             range(0, 9) // On génère un tableau d'index de 0 à 9 pour créer 10 tags.
         );
 
@@ -39,8 +36,6 @@ final class TagFixtures extends Fixture
             $tags,
             /**
              * Callback pour array_walk.
-             *
-             * @param Tag $tag
              */
             function (Tag $tag) use ($manager): void {
                 $manager->persist($tag);
