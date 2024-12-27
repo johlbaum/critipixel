@@ -42,11 +42,11 @@ jobs:
           echo "PANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots" >> .env.test
           echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}?charset=utf8" >> .env.test
 
-      # Step to create the test database
+      # Step to create the test database (PostgreSQL style)
       - name: Create the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}  # Pass the password to PGPASSWORD
-          psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_NAME }};"
+          psql -h ${{ secrets.DB_HOST }} -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "SELECT 'CREATE DATABASE ${{ secrets.DB_NAME }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${{ secrets.DB_NAME }}')\gexec;"
 
       - name: Run database migrations
         run: php bin/console doctrine:migrations:migrate -n --env=test
