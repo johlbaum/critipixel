@@ -33,6 +33,10 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+    # Clear cache before proceeding with the database setup
+      - name: Clear cache
+        run: php bin/console cache:clear --env=test --no-warmup
+
       - name: Create .env.test from secrets
         run: |
           echo "KERNEL_CLASS='App\Kernel'" > .env.test
