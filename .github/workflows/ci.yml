@@ -11,7 +11,6 @@ jobs:
     services:
       postgres:
         image: postgres:12
-        options: --health-cmd="pg_isready -U postgres" --health-timeout=5s --health-retries=3 --health-start-period=30s
         env:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
           POSTGRES_USER: ${{ secrets.DB_USER }}
