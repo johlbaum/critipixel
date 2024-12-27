@@ -49,18 +49,21 @@ jobs:
             sleep 2
           done
 
-      - name: Create the test database if not exists
+      # Drop and create the test database (without Docker)
+      - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          psql -h localhost -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_test;"
-
-      - name: Verify the databases
-        run: |
-          export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          psql -h localhost -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "\l"
+          php bin/console doctrine:database:drop -f --if-exists --env=test
+          php bin/console doctrine:database:create --env=test
 
       - name: Run database migrations
         run: php bin/console doctrine:migrations:migrate -n --env=test
+
+      - name: Load fixtures
+        run: php bin/console doctrine:fixtures:load -n --purge-with-truncate --env=test
+
+      - name: Compile assets (Sass)
+        run: php bin/console sass:build
 
       - name: Run tests
         run: php bin/phpunit
