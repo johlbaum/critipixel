@@ -1,37 +1,34 @@
-name: Continuous integration
+name: Continuous Integration
 
-on: [push]
+on:
+  push:
+    branches: [ ci-setup ]
 
 jobs:
   ci:
-    name: Continuous Integration
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['8.2', '8.3']
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12
+        options: --health-cmd="pg_isready -U postgres" --health-timeout=5s --health-retries=3 --health-start-period=30s
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup PHP, with composer and extensions
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, xml, ctype, iconv, intl
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql
           tools: composer
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: composer install
@@ -39,16 +36,15 @@ jobs:
       - name: Set up PostgreSQL connection in .env.test
         run: |
           cp .env.test .env
+          sed -i 's/DB_CONNECTION=postgres/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=5432/DB_PORT=5432/' .env
+          sed -i 's/DB_DATABASE=your_database/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=your_username/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=your_password/DB_PASSWORD=password/' .env
 
-      - name: Setup database
-        run: |
-          php bin/console doctrine:database:drop -f --if-exists --env=test
-          php bin/console doctrine:database:create --env=test
-          php bin/console doctrine:migrations:migrate -n --env=test
-          php bin/console doctrine:fixtures:load -n --purge-with-truncate --env=test
-
-      - name: Compile SASS
-        run: php bin/console sass:build
+      - name: Run database migrations
+        run: php bin/console doctrine:migrations:migrate -n --env=test
 
       - name: Run tests
         run: php bin/phpunit
