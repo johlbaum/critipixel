@@ -36,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+      - name: Set up PostgreSQL connection in .env.test
+        run: |
+          cp .env.test .env
+
       - name: Setup database
         run: |
           php bin/console doctrine:database:drop -f --if-exists --env=test
