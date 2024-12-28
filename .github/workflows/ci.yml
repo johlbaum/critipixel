@@ -9,7 +9,8 @@ on:
 
 jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécutent dans un même environnement. 
   ci: # Le nom du Job ("Continuous Integration").
-    runs-on: ubuntu-latest # Signifie que le job "Ci" est sera exécuté sur une machine virtuelle hébergée par GitHub, qui utilise une image contenant la dernière version stable de l'environnement Ubuntu supporté.
+    runs-on: ubuntu-latest # Signifie que le job "Ci" est sera exécuté sur une machine virtuelle hébergée par GitHub, qui utilise une image contenant la dernière version stable de l'environnement Ubuntu supporté
+    # GitHub Actions utilise des images Docker pour exécuter les workflows, et `ubuntu-latest` spécifie que l'environnement d'exécution sera basé sur Ubuntu.
 
     services:
       postgres:
