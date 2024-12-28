@@ -69,6 +69,11 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # - `DATABASE_URL` spécifie l'URL de connexion à la base de données PostgreSQL utilisée pour les tests, en utilisant les secrets GitHub pour garantir la sécurité.
         # Ces paramètres sont nécessaires pour que Symfony et les tests fonctionnent correctement dans l'environnement de test.
 
+      - name: Create the database manually
+        run: |
+          export PGPASSWORD=${{ secrets.DB_PASSWORD }}
+          psql -h localhost -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "CREATE DATABASE criti-pixel;"
+
       - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
