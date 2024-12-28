@@ -72,7 +72,6 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
       - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          php bin/console doctrine:database:drop -f --if-exists --env=test
           php bin/console doctrine:database:create --env=test
         # Cette étape supprime la base de données de test existante avec `doctrine:database:drop -f --if-exists` et la recrée avec `doctrine:database:create`.
         # Cela garantit que les tests sont exécutés sur une base de données propre à chaque exécution du pipeline.
