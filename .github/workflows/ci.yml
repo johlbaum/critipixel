@@ -19,7 +19,6 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # L'image `postgres:12` désigne la version 12 de PostgreSQL, utilisée pour tester l'application avec une base de données PostgreSQL.
 
         env:
-        
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         # Ces variables d'environnement injectent les paramètres nécessaires pour se connecter à la base de données PostgreSQL.
