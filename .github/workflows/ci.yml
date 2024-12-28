@@ -18,16 +18,6 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # Ici, un service PostgreSQL est configuré pour être utilisé dans le pipeline.
         # L'image `postgres:12` désigne la version 12 de PostgreSQL, utilisée pour tester l'application avec une base de données PostgreSQL.
 
-        env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        # Ces variables d'environnement injectent les paramètres nécessaires pour se connecter à la base de données PostgreSQL.
-        # - `POSTGRES_DB` : nom de la base de données.
-        # - `POSTGRES_USER` : utilisateur de la base de données.
-        # - `POSTGRES_PASSWORD` : mot de passe de l'utilisateur.
-        # Ces valeurs sont récupérées des `secrets` GitHub pour garantir qu'elles sont sécurisées.
-
         ports:
           - 5432:5432
         # Cette ligne expose le port 5432 de PostgreSQL dans le conteneur. C'est le port par défaut utilisé par PostgreSQL.
@@ -57,6 +47,11 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
 
       - name: Create .env.test from secrets
         run: |
+          echo "KERNEL_CLASS='App\Kernel'" > .env.test
+          echo "APP_SECRET='${{ secrets.APP_SECRET }}'" >> .env.test
+          echo "SYMFONY_DEPRECATIONS_HELPER=999999" >> .env.test
+          echo "PANTHER_APP_ENV=panther" >> .env.test
+          echo "PANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots" >> .env.test
           echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}_test?charset=utf8" >> .env.test
         # Cette étape crée un fichier `.env.test` qui contient les variables d'environnement nécessaires à l'exécution des tests.
         # - `KERNEL_CLASS` définit la classe de noyau de l'application.
