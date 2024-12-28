@@ -52,8 +52,6 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
 
       - name: Install dependencies
         run: composer install
-        # Cette commande exécute `composer install` pour installer toutes les dépendances PHP définies dans le fichier `composer.json`.
-        # Cela est essentiel pour préparer l'environnement de développement pour l'exécution de l'application.
 
       - name: Create .env.test from secrets
         run: |
@@ -63,41 +61,27 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
           echo "PANTHER_APP_ENV=panther" >> .env.test
           echo "PANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots" >> .env.test
           echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}?charset=utf8" >> .env.test
-        # Cette étape crée un fichier `.env.test` qui contient les variables d'environnement nécessaires à l'exécution des tests.
-        # - `KERNEL_CLASS` définit la classe de noyau de l'application.
-        # - `APP_SECRET` est une clé secrète utilisée pour les fonctions de sécurité.
-        # - `DATABASE_URL` spécifie l'URL de connexion à la base de données PostgreSQL utilisée pour les tests, en utilisant les secrets GitHub pour garantir la sécurité.
-        # Ces paramètres sont nécessaires pour que Symfony et les tests fonctionnent correctement dans l'environnement de test.
 
       - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
           php bin/console doctrine:database:drop -f --if-exists --env=test
           php bin/console doctrine:database:create --env=test
-        # Cette étape supprime la base de données de test existante avec `doctrine:database:drop -f --if-exists` et la recrée avec `doctrine:database:create`.
-        # Cela garantit que les tests sont exécutés sur une base de données propre à chaque exécution du pipeline.
 
       - name: Run database migrations
         run: php bin/console doctrine:migrations:migrate -n --env=test
-        # Cette commande exécute les migrations de base de données pour mettre à jour la structure de la base de données à la version la plus récente définie par les migrations Doctrine.
-        # L'option `-n` empêche Symfony de demander une confirmation avant d'exécuter la migration.
 
       - name: Load fixtures
         run: php bin/console doctrine:fixtures:load -n --purge-with-truncate --env=test
-        # Cette commande charge des fixtures dans la base de données de test pour peupler la base avec des données d'exemple.
-        # - `--purge-with-truncate` vide la base avant de charger les nouvelles données, ce qui garantit que la base de données est dans un état initial avant d'ajouter des données de test.
 
       - name: Compile assets (Sass)
         run: php bin/console sass:build
-        # Cette étape compile les fichiers Sass (si utilisés) en fichiers CSS, nécessaires pour la partie front-end de l'application.
-        # Cela peut inclure des styles pour les pages et les composants de l'application.
 
       - name: Run tests
         run: php bin/phpunit
-        # Cette étape lance les tests PHPUnit pour vérifier que le code fonctionne comme prévu. PHPUnit est un framework de tests pour PHP.
-        # Tous les tests définis dans le projet seront exécutés pour s'assurer que l'application est fonctionnelle et conforme aux attentes.
 
       - name: Run phpstan
         run: php vendor/bin/phpstan
-        # Cette étape exécute PHPStan, un outil d'analyse statique du code, pour détecter les erreurs potentielles et améliorer la qualité du code.
-        # PHPStan analyse le code sans l'exécuter, à la recherche de problèmes tels que des erreurs de type ou des appels de fonction incorrects.
+
+      - name: Check code with PHP CS Fixer (dry-run)
+        run: php vendor/bin/php-cs-fixer fix --dry-run --diff
