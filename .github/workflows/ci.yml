@@ -12,26 +12,7 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
     runs-on: ubuntu-latest # Signifie que le job "Ci" est sera exécuté sur une machine virtuelle hébergée par GitHub, qui utilise une image contenant la dernière version stable de l'environnement Ubuntu supporté
     # GitHub Actions utilise des images Docker pour exécuter les workflows, et `ubuntu-latest` spécifie que l'environnement d'exécution sera basé sur Ubuntu.
 
-    services:
-      postgres:
-        image: postgres:12
-        # Ici, un service PostgreSQL est configuré pour être utilisé dans le pipeline.
-        # L'image `postgres:12` désigne la version 12 de PostgreSQL, utilisée pour tester l'application avec une base de données PostgreSQL.
-
-        env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        # Ces variables d'environnement injectent les paramètres nécessaires pour se connecter à la base de données PostgreSQL.
-        # - `POSTGRES_DB` : nom de la base de données.
-        # - `POSTGRES_USER` : utilisateur de la base de données.
-        # - `POSTGRES_PASSWORD` : mot de passe de l'utilisateur.
-        # Ces valeurs sont récupérées des `secrets` GitHub pour garantir qu'elles sont sécurisées.
-
-        ports:
-          - 5432:5432
-        # Cette ligne expose le port 5432 de PostgreSQL dans le conteneur. C'est le port par défaut utilisé par PostgreSQL.
-        # Cela permet à d'autres étapes dans le pipeline d'interagir avec la base de données en utilisant ce port.
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
