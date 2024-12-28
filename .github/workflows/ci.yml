@@ -72,7 +72,8 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
       - name: Create the database manually
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          psql -h localhost -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "CREATE DATABASE criti-pixel;"
+          psql -h localhost -U ${{ secrets.DB_USER }} -p ${{ secrets.DB_PORT }} -c "CREATE DATABASE \"criti-pixel\";"
+
 
       - name: Drop and recreate the test database
         run: |
