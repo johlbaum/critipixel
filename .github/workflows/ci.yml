@@ -72,7 +72,7 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
       - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          php bin/console doctrine:database:drop -f --if-exists --env=test
+     
           php bin/console doctrine:database:create --env=test
         # Cette étape supprime la base de données de test existante avec `doctrine:database:drop -f --if-exists` et la recrée avec `doctrine:database:create`.
         # Cela garantit que les tests sont exécutés sur une base de données propre à chaque exécution du pipeline.
@@ -97,7 +97,7 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # Cette étape lance les tests PHPUnit pour vérifier que le code fonctionne comme prévu. PHPUnit est un framework de tests pour PHP.
         # Tous les tests définis dans le projet seront exécutés pour s'assurer que l'application est fonctionnelle et conforme aux attentes.
 
-      - name: Static analysis
+      - name: Run phpstan
         run: php vendor/bin/phpstan
         # Cette étape exécute PHPStan, un outil d'analyse statique du code, pour détecter les erreurs potentielles et améliorer la qualité du code.
         # PHPStan analyse le code sans l'exécuter, à la recherche de problèmes tels que des erreurs de type ou des appels de fonction incorrects.
