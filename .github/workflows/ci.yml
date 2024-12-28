@@ -10,9 +10,17 @@ on:
 jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécutent dans un même environnement. 
   ci: # Le nom du Job ("Continuous Integration").
     runs-on: ubuntu-latest # Signifie que le job "Ci" est sera exécuté sur une machine virtuelle hébergée par GitHub, qui utilise une image contenant la dernière version stable de l'environnement Ubuntu supporté
+    # Ce job (qui sera exécuté dans le pipeline) se lance sur une machine virtuelle Ubuntu, avec la dernière version disponible.
     # GitHub Actions utilise des images Docker pour exécuter les workflows, et `ubuntu-latest` spécifie que l'environnement d'exécution sera basé sur Ubuntu.
 
-    
+    services:
+      postgres:
+        image: postgres:12
+        # Ici, un service PostgreSQL est configuré pour être utilisé dans le pipeline.
+        # L'image `postgres:12` désigne la version 12 de PostgreSQL, utilisée pour tester l'application avec une base de données PostgreSQL.
+
+       
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
