@@ -33,4 +33,21 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # Cette ligne expose le port 5432 de PostgreSQL dans le conteneur. C'est le port par défaut utilisé par PostgreSQL.
         # Cela permet à d'autres étapes dans le pipeline d'interagir avec la base de données en utilisant ce port.
 
-   
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        # Cette étape utilise l'action GitHub `actions/checkout@v2` pour récupérer le code source de la branche sur laquelle le workflow est exécuté.
+        # Cela permet au workflow d'accéder à tous les fichiers du projet pour les tester et les déployer.
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql
+          tools: composer
+        # Cette étape configure PHP dans l'environnement de CI.
+        # - `php-version: '8.2'` définit la version de PHP à utiliser (ici, PHP 8.2).
+        # - `extensions` liste les extensions PHP requises pour l'application, notamment `mbstring` pour la gestion des chaînes multibytes, `pdo` et `pdo_pgsql` pour la gestion de la base de données PostgreSQL, etc.
+        # - `tools: composer` indique que l'outil Composer (un gestionnaire de dépendances PHP) sera installé.
+
+     
