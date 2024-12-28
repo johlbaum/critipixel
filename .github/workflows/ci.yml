@@ -69,5 +69,11 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # - `DATABASE_URL` spécifie l'URL de connexion à la base de données PostgreSQL utilisée pour les tests, en utilisant les secrets GitHub pour garantir la sécurité.
         # Ces paramètres sont nécessaires pour que Symfony et les tests fonctionnent correctement dans l'environnement de test.
 
+      - name: Drop and recreate the test database
+        run: |
+          export PGPASSWORD=${{ secrets.DB_PASSWORD }}
       
+        # Cette étape supprime la base de données de test existante avec `doctrine:database:drop -f --if-exists` et la recrée avec `doctrine:database:create`.
+        # Cela garantit que les tests sont exécutés sur une base de données propre à chaque exécution du pipeline.
+
       
