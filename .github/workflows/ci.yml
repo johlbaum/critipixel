@@ -68,6 +68,9 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
         # - `APP_SECRET` est une clé secrète utilisée pour les fonctions de sécurité.
         # - `DATABASE_URL` spécifie l'URL de connexion à la base de données PostgreSQL utilisée pour les tests, en utilisant les secrets GitHub pour garantir la sécurité.
         # Ces paramètres sont nécessaires pour que Symfony et les tests fonctionnent correctement dans l'environnement de test.
+    
+      - name: Debug DATABASE_URL
+        run: php bin/console debug:dotenv | grep DATABASE_URL
 
       - name: Drop and recreate the test database
         run: |
