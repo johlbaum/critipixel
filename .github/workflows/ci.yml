@@ -71,6 +71,6 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
 
       - name: Log DATABASE_URL for debugging
         run: |
-         echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}_test?charset=utf8"
+         echo "DATABASE_URL=pgsql://postgres:password@localhost:5432/test_database?charset=utf8"
 
      
