@@ -3,10 +3,22 @@ name: Continuous Integration
 on:
   push:
     branches: [ ci-setup ]
+  pull_request:
+    branches:
+      - main
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -28,23 +40,9 @@ jobs:
           echo "APP_SECRET='${{ secrets.APP_SECRET }}'" >> .env.test
           echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}_test?charset=utf8" >> .env.test
 
-      # Installation manuelle de PostgreSQL et création de la base de données
-      - name: Install PostgreSQL
-        run: |
-          sudo apt-get update
-          sudo apt-get install postgresql postgresql-contrib
-
-      - name: Start PostgreSQL service
-        run: |
-          sudo service postgresql start
-
-      - name: Create database manually
-        run: |
-          sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME}_test;"
-          sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASSWORD}';"
-          sudo -u postgres psql -c "ALTER ROLE ${DB_USER} SET client_encoding TO 'utf8';"
-          sudo -u postgres psql -c "ALTER ROLE ${DB_USER} SET default_transaction_isolation TO 'read committed';"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME}_test TO ${DB_USER};"
+      # Suppression de la double création de la base de données
+      # On suppose que la base de données est déjà disponible grâce au service PostgreSQL
+      # et que les migrations vont s'exécuter correctement sur celle-ci.
 
       - name: Run database migrations
         run: php bin/console doctrine:migrations:migrate -n --env=test
