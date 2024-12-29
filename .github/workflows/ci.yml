@@ -1,43 +1,34 @@
 name: Continuous Integration
-# Le nom du workflow est défini ici comme "Continuous Integration". Ce nom sera visible dans l'interface GitHub sous les workflows et peut être personnalisé pour décrire plus précisément la tâche exécutée.
+# Le nom du workflow.
 
 on:
   push:
     branches: [ ci-setup ]
-    # Ce workflow est déclenché lorsqu'un `push` (envoi de modifications) est effectué sur la branche `ci-setup`.
-    # Cela signifie que toute modification dans cette branche déclenchera l'exécution de ce pipeline.
+    # Ce workflow est déclenché lorsqu'un "push"" est effectué sur la branche "ci-setup".
 
-jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécutent dans un même environnement. 
-  ci: # Le nom du Job ("Continuous Integration").
-    runs-on: ubuntu-latest # Signifie que le job "Ci" est sera sera exécuté sur une machine virtuelle hébergée par GitHub, qui utilise une image contenant la dernière version stable de l'environnement Ubuntu supporté
-    # Ce job (qui sera exécuté dans le pipeline) se lance sur une machine virtuelle Ubuntu, avec la dernière version disponible.
-    # GitHub Actions utilise des images Docker pour exécuter les workflows, et `ubuntu-latest` spécifie que l'environnement d'exécution sera basé sur Ubuntu.
+jobs:
+  ci:  # Le nom du Job ("Continuous Integration").
+    runs-on: ubuntu-latest  # Le job sera exécuté sur une machine virtuelle Ubuntu (dernière version stable).
 
     services:
       postgres:
         image: postgres:12
-        # Ici, un service PostgreSQL est configuré pour être utilisé dans le pipeline.
-        # L'image `postgres:12` désigne la version 12 de PostgreSQL, utilisée pour tester l'application avec une base de données PostgreSQL.
+        # Configuration du service PostgreSQL avec l'image "postgres:12" pour effectuer des tests avec une base de données PostgreSQL.
 
         env:
           POSTGRES_USER: ${{ secrets.DB_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        # Ces variables d'environnement injectent les paramètres nécessaires pour se connecter à la base de données PostgreSQL.
-        # - `POSTGRES_DB` : nom de la base de données.
-        # - `POSTGRES_USER` : utilisateur de la base de données.
-        # - `POSTGRES_PASSWORD` : mot de passe de l'utilisateur.
-        # Ces valeurs sont récupérées des `secrets` GitHub pour garantir qu'elles sont sécurisées.
+          # Les variables d'environnement sont utilisées pour définir les informations de connexion à la base de données PostgreSQL.
 
         ports:
           - 5432:5432
-        # Cette ligne expose le port 5432 de PostgreSQL dans le conteneur. C'est le port par défaut utilisé par PostgreSQL.
-        # Cela permet à d'autres étapes dans le pipeline d'interagir avec la base de données en utilisant ce port.
+          # Expose le port 5432 du service PostgreSQL pour permettre les connexions à la base de données depuis le pipeline.
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        # Cette étape utilise l'action GitHub `actions/checkout@v2` pour récupérer le code source de la branche sur laquelle le workflow est exécuté.
-        # Cela permet au workflow d'accéder à tous les fichiers du projet pour les tester et les déployer.
+        # Cette étape récupère le code source de la branche déclenchante à l'aide de l'action GitHub `actions/checkout@v2`.
+        # Elle permet au pipeline d'accéder aux fichiers du projet pour les tests et la construction.
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -45,13 +36,13 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
           php-version: '8.2'
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql
           tools: composer
-        # Cette étape configure PHP dans l'environnement de CI.
-        # - `php-version: '8.2'` définit la version de PHP à utiliser (ici, PHP 8.2).
-        # - `extensions` liste les extensions PHP requises pour l'application, notamment `mbstring` pour la gestion des chaînes multibytes, `pdo` et `pdo_pgsql` pour la gestion de la base de données PostgreSQL, etc.
-        # - `tools: composer` indique que l'outil Composer (un gestionnaire de dépendances PHP) sera installé.
+        # Cette étape configure PHP avec la version spécifiée (ici 8.2).
+        # Les extensions nécessaires sont ajoutées pour assurer que l'application fonctionne correctement avec PostgreSQL et autres fonctionnalités.
+        # Composer est installé pour gérer les dépendances PHP.
 
       - name: Install dependencies
         run: composer install
+        # Installe les dépendances PHP définies dans "composer.json" pour préparer l'environnement à l'exécution de l'application.
 
       - name: Create .env.test from secrets
         run: |
@@ -61,27 +52,40 @@ jobs: # Dans GitHub Actions, un job est une série de pas (steps) qui s'exécute
           echo "PANTHER_APP_ENV=panther" >> .env.test
           echo "PANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots" >> .env.test
           echo "DATABASE_URL=pgsql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}?charset=utf8" >> .env.test
+        # Cette étape crée un fichier ".env.test" pour définir les variables d'environnement spécifiques à l'environnement de test.
+        # Ces variables incluent la configuration de la base de données, les paramètres de sécurité et autres nécessaires pour Symfony.
 
       - name: Drop and recreate the test database
         run: |
           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
           php bin/console doctrine:database:drop -f --if-exists --env=test
           php bin/console doctrine:database:create --env=test
+        # Supprime la base de données de test existante (si elle existe) et la recrée pour garantir que les tests démarrent sur une base propre.
 
       - name: Run database migrations
         run: php bin/console doctrine:migrations:migrate -n --env=test
+        # Applique les migrations de base de données pour mettre à jour la structure de la base de données.
+        # L'option "-n" empêche la confirmation manuelle pendant l'exécution des migrations.
 
       - name: Load fixtures
         run: php bin/console doctrine:fixtures:load -n --purge-with-truncate --env=test
+        # Charge les fixtures dans la base de données de test.
+        # "--purge-with-truncate" vide la base de données avant de charger les nouvelles données.
 
       - name: Compile assets (Sass)
         run: php bin/console sass:build
+        # Compile les fichiers Sass en fichiers CSS pour le front-end de l'application.
 
       - name: Run tests
         run: php bin/phpunit
+        # Exécute les tests.
 
       - name: Run phpstan
         run: php vendor/bin/phpstan
+        # Exécute PHPStan.
 
       - name: Check code with PHP CS Fixer (dry-run)
         run: php vendor/bin/php-cs-fixer fix --dry-run --diff
+        # Effectue une vérification de la conformité du code avec les standards de formatage définis.
+        # Le `--dry-run` permet de voir les modifications proposées sans appliquer réellement les changements.
+        # Le `--diff` affiche les différences entre le code actuel et la version corrigée.
