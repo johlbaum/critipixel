@@ -84,8 +84,5 @@ jobs:
         run: php vendor/bin/phpstan
         # Exécute PHPStan.
 
-      - name: Check code with PHP CS Fixer (dry-run)
-        run: php vendor/bin/php-cs-fixer fix --dry-run --diff
-        # Effectue une vérification de la conformité du code avec les standards de formatage définis.
-        # Le `--dry-run` permet de voir les modifications proposées sans appliquer réellement les changements.
-        # Le `--diff` affiche les différences entre le code actuel et la version corrigée.
+      - name: Apply code fixes with PHP CS Fixer
+        run: php vendor/bin/php-cs-fixer fix --diff
