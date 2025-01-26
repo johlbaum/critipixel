@@ -49,8 +49,8 @@ final class FilterTest extends FunctionalTestCase
         $form = $crawler->selectButton('Filtrer')->form();
 
         foreach ($tags as $tag) {
-            // On construit la clé pour chaque champ du formulaire
-            $fieldKey = 'filter[tags]['.((int) $tag - 1).']';
+            // On construit la clé pour chaque champ du formulaire.
+            $fieldKey = 'filter[tags][' . ((int) $tag - 1) . ']';
 
             // On vérifie si le tag existe.
             if (isset($form[$fieldKey])) {
@@ -77,7 +77,7 @@ final class FilterTest extends FunctionalTestCase
 
             // On vérifie que le titre du dernier jeu vidéo filtré est bien le bon.
             self::assertSelectorTextSame(
-                'article.game-card:nth-child('.$expectedCount.') h5.game-card-title a',
+                'article.game-card:nth-child(' . $expectedCount . ') h5.game-card-title a',
                 $expectedLastGameTitle
             );
         }

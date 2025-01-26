@@ -28,7 +28,7 @@ final class TagFixtures extends Fixture
             /**
              * Callback pour array_map.
              */
-            fn (int $index): Tag => self::create($index),
+            fn(int $index): Tag => self::create($index),
             range(0, 9) // On génère un tableau d'index de 0 à 9 pour créer 10 tags.
         );
 

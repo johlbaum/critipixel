@@ -19,8 +19,7 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         private readonly Generator $faker,
         private readonly CalculateAverageRating $calculateAverageRating,
         private readonly CountRatingsPerValue $countRatingsPerValue,
-    ) {
-    }
+    ) {}
 
     public function load(ObjectManager $manager): void
     {
@@ -28,12 +27,12 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         $users = $manager->getRepository(User::class)->findAll();
 
         // On exclut l'utilisateur ayant l'email 'user+0@email.com'. Pour les tests, cet utilisateur ne doit pas avoir de review associée.
-        $filteredUsers = array_filter($users, fn (User $user) => 'user+0@email.com' !== $user->getEmail());
+        $filteredUsers = array_filter($users, fn(User $user) => 'user+0@email.com' !== $user->getEmail());
 
         $videoGames = \array_fill_callback(
             0,
             50,
-            fn (int $index): array => [
+            fn(int $index): array => [
                 (new VideoGame())
                     ->setTitle(sprintf('Jeu vidéo %d', $index))
                     ->setDescription($this->faker->paragraphs(10, true))

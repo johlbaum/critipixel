@@ -15,11 +15,11 @@ final class UserFixtures extends Fixture
             /**
              * Callback pour array_map.
              */
-            fn (int $index): User => (new User())
+            fn(int $index): User => (new User())
                 ->setEmail(sprintf('user+%d@email.com', $index))
                 ->setPlainPassword('password')
                 ->setUsername(sprintf('user+%d', $index)),
-            range(0, 24) // On génère un tableau d'index de 0 à 24 pour la création des utilisateurs.
+            range(0, 4)
         );
 
         // array_walk() : exécute une callback sur chaque élément d'un tableau.
