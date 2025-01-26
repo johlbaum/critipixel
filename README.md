@@ -27,7 +27,7 @@ composer install
 
 ### 3. Configurer la base de données 
 
-#### Configurer l’environnement
+#### Paramétrer l’environnement
 
 Créez un fichier `.env.local` à la racine du projet avec la configuration suivante :
 
@@ -37,7 +37,7 @@ DATABASE_URL="postgresql://<utilisateur>:<mot_de_passe>@127.0.0.1:5432/criti-pix
 
 *Note : Cette configuration doit être adaptée à votre environnement local en fonction du type de base de données utilisé et des paramètres d'accès.*
 
-#### Création de la base de données 
+#### Créer la base de données 
 
 ```bash
 php bin/console doctrine:database:create
@@ -64,9 +64,9 @@ symfony console sass:build
 
 ## Tests
 
-### 1. Configurer l’environnement de test
+### 1. Configurer la base de données de test
 
-#### Installer la base de données de test
+#### Paramétrer l’environnement de test
 
 Créez un fichier `.env.test` à la racine du projet avec la configuration suivante :
 
@@ -79,7 +79,7 @@ DATABASE_URL="postgresql://<utilisateur>:<mot_de_passe>@127.0.0.1:5432/criti-pix
 ```
 *Note : Cette configuration doit être adaptée à votre environnement local en fonction du type de base de données utilisé et des paramètres d'accès.*
 
-#### Création de la base de données de test 
+#### Créer la base de données de test 
 
 ```bash
 php bin/console doctrine:database:create --env=test
