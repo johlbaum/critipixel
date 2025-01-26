@@ -10,75 +10,98 @@
 
 ## Installation
 
-### Composer
-Dans un premier temps, installer les dépendances :
+### 1. Cloner le projet
+
+Clonez le dépôt du projet avec la commande suivante :
+
+git clone <URL_DU_DEPOT>
+cd <NOM_DU_DOSSIER>
+
+### 2. Installer les dépendances
+
+Installez les dépendances du projet en utilisant Composer avec la commande suivante :
+
 ```bash
 composer install
 ```
 
-### Docker (optionnel)
-Si vous souhaitez utiliser Docker Compose, il vous suffit de lancer la commande suivante :
+### 3. Configurer la base de données 
+
+#### Configurer l’environnement
+
+Créez un fichier `.env.local` à la racine du projet avec la configuration suivante :
+
 ```bash
-docker compose up -d
+DATABASE_URL="postgresql://<utilisateur>:<mot_de_passe>@127.0.0.1:5432/criti-pixel?serverVersion=16&charset=utf8"
 ```
 
-## Configuration
+*Note : Cette configuration doit être adaptée à votre environnement local en fonction du type de base de données utilisé et des paramètres d'accès.*
 
-### Base de données
-Actuellement, le fichier `.env` est configuré pour la base de données PostgreSQL mise en place dans `docker-compose.yml`.
-Cependant, vous pouvez créer un fichier `.env.local` si nécessaire pour configurer l'accès à la base de données.
-Exemple :
-```dotenv
-DATABASE_URL=mysql://root:Password123!@host:3306/criti-pixel
-```
+#### Création de la base de données 
 
-### PHP (optionnel)
-Vous pouvez surcharger la configuration PHP en créant un fichier `php.local.ini`.
-
-De même pour la version de PHP que vous pouvez spécifier dans un fichier `.php-version`.
-
-## Usage
-
-### Base de données
-
-#### Supprimer la base de données
 ```bash
-symfony console doctrine:database:drop --force --if-exists
+php bin/console doctrine:database:create
 ```
 
-#### Créer la base de données
+#### Appliquer les migrations 
+
 ```bash
-symfony console doctrine:database:create
+php bin/console doctrine:migrations:migrate --no-interaction 
 ```
 
-#### Exécuter les migrations
+#### Générer les fixtures
+
 ```bash
-symfony console doctrine:migrations:migrate -n
+php bin/console doctrine:fixtures:load --no-interaction 
 ```
 
-#### Charger les fixtures
-```bash
-symfony console doctrine:fixtures:load -n --purge-with-truncate
-```
+### 3. Compiler les fichiers SASS
 
-*Note : Vous pouvez exécuter ces commandes avec l'option `--env=test` pour les exécuter dans l'environnement de test.*
-
-### SASS
-
-#### Compiler les fichiers SASS
 ```bash
 symfony console sass:build
 ```
 *Note : le fichier `.symfony.local.yaml` est configuré pour surveiller les fichiers SASS et les compiler automatiquement quand vous lancez le serveur web de Symfony.*
 
-### Tests
+## Tests
+
+### 1. Configurer l’environnement de test
+
+#### Installer la base de données de test
+
+Créez un fichier `.env.test` à la racine du projet avec la configuration suivante :
+
 ```bash
-symfony php bin/phpunit
+KERNEL_CLASS='App\Kernel'
+APP_SECRET='$ecretf0rt3st'
+SYMFONY_DEPRECATIONS_HELPER=999999
+
+DATABASE_URL="postgresql://<utilisateur>:<mot_de_passe>@127.0.0.1:5432/criti-pixel?serverVersion=16&charset=utf8"
+```
+*Note : Cette configuration doit être adaptée à votre environnement local en fonction du type de base de données utilisé et des paramètres d'accès.*
+
+#### Création de la base de données de test 
+
+```bash
+php bin/console doctrine:database:create --env=test
 ```
 
-*Note : Penser à charger les fixtures avant chaque éxécution des tests.*
+#### Appliquer les migrations dans l'environnement de test
 
-### Serveur web
 ```bash
-symfony serve
+php bin/console doctrine:migrations:migrate --env=test --no-interaction 
 ```
+
+#### Générer les fixtures dans l'environnement de test
+
+```bash
+php bin/console doctrine:fixtures:load --env=test --no-interaction
+```
+
+### 2. Lancer les tests
+
+```bash
+vendor/bin/phpunit 
+```
+*Note : Penser à charger les fixtures avant chaque exécution des tests.*
+
+
